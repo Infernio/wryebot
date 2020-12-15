@@ -1,1 +1,4 @@
+# Runtime, required
 pygithub==1.54
+# Compile/Build-time
+pylint==2.6.0
