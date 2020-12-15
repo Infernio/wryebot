@@ -3,7 +3,8 @@ name = "wryebot"
 version = "0.1.0"
 authors = ["Infernio <infernio@icloud.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A bot for the Wrye Bash project."
+repository = "https://github.com/Infernio/wryebot"
+license = "GPL-3.0-or-later"
 
 [dependencies]
