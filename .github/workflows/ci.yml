@@ -1,38 +1,45 @@
 name: CI
 
-on: push
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        python-ver: [3.9, 3.10-dev]
-    runs-on: '${{ matrix.os }}'
-    name: 'Python ${{ matrix.python-ver }} on ${{ matrix.os }}'
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout commit
         uses: actions/checkout@v2
-      - name: 'Set up Python ${{ matrix.python-ver }}'
-        uses: actions/setup-python@v2
-        with:
-          python-version: '${{ matrix.python-ver }}'
-          architecture: x64
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(python -m pip cache dir)"
-      - name: Restore dependencies cache
-        uses: actions/cache@v2
-        with:
-          path: '${{ steps.pip-cache.outputs.dir }}'
-          key: ${{ runner.os }}-${{ matrix.python-ver }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.python-ver }}-pip-
-      - name: Install dependencies
-        run: |
-          python -m pip install -U pip
-          python -m pip install -r requirements.txt
-      - name: Lint with pylint
-        run: |
-          python -m pylint src
+
+      - name: Install Rust Stable
+        run: rustup update --no-self-update stable && rustup default stable
+
+      - name: Check with rustfmt
+        run: cargo fmt -- --check
+
+      - name: Check with clippy
+        run: cargo clippy
+
+  test:
+    name: Testing
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        channel: [stable, beta, nightly]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v2
+
+      - name: Install Rust ${{ matrix.channel }}
+        run: rustup update --no-self-update $CHANNEL && rustup default $CHANNEL
+        env:
+          CHANNEL: ${{ matrix.channel }}
+
+      - name: Build wryebot
+        run: cargo build
+
+      - name: Test wryebot
+        run: cargo test

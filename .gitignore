@@ -1,7 +1,5 @@
 # Compiled/Generated files
-*.pyc
-*.pyo
-*.pyd
+target/
 
 # IDE files
 .idea
