@@ -1,0 +1,10 @@
+# Compiled/Generated files
+*.pyc
+*.pyo
+*.pyd
+
+# IDE files
+.idea
+.idea/
+.vs
+.vs/
